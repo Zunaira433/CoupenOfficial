@@ -32,14 +32,11 @@ export default async function CouponsPage({ params }: { params: { brand: string 
       <div className="mt-6 flex flex-col gap-4">
         {brand.coupons.map((c) => (
           <CouponCard
-            key={c.id}
-            brandSlug={brand.slug}
-            brandName={brand.name}
-            title={c.title}
-            code={c.code}
-            discount={c.discount}
-            verified={c.verified}
-          />
+  key={c.id}
+  coupon={c}
+  brandSlug={brand.slug}
+  brandName={brand.name}
+/>
         ))}
         {brand.coupons.length === 0 && <p className="text-gray-500">No active coupons right now.</p>}
       </div>
