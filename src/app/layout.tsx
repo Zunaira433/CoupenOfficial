@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SkipLink from "@/components/SkipLink";
 import CookieConsent from "@/components/CookieConsent";
-import { env } from "@/lib/env";
+
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,7 +14,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(env.SITE_URL),
+ metadataBase: new URL(
+  process.env.NEXT_PUBLIC_SITE_URL || "https://coupenofficial.com"
+),
   title: {
     default: "CoupenOfficial – Verified Coupons, Deals & Promo Codes",
     template: "%s | CoupenOfficial"
