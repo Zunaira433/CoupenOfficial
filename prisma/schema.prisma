@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  name      String?
+  role      Role       @default(USER)
+  favorites Favorite[]
+  comments  Comment[]
+  reactions Reaction[]
+  createdAt DateTime   @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  brands      Brand[]
+  createdAt   DateTime @default(now())
+
+  @@index([slug])
+}
+
+model Brand {
+  id            String       @id @default(cuid())
+  name          String
+  slug          String       @unique
+  logoUrl       String?
+  description   String?
+  websiteUrl    String
+  affiliateLink String
+  metaTitle     String?
+  metaDesc      String?
+  category      Category     @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  coupons       Coupon[]
+  reviews       Review[]
+  favorites     Favorite[]
+  compareLeft   Comparison[] @relation("CompareA")
+  compareRight  Comparison[] @relation("CompareB")
+  clicks        Click[]
+  rating        Float        @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([slug])
+  @@index([categoryId])
+}
+
+model Coupon {
+  id          String   @id @default(cuid())
+  title       String
+  code        String?
+  description String?
+  discount    String?
+  brand       Brand    @relation(fields: [brandId], references: [id])
+  brandId     String
+  verified    Boolean  @default(false)
+  expiresAt   DateTime?
+  clicks      Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([brandId])
+  @@index([expiresAt])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  brand     Brand    @relation(fields: [brandId], references: [id])
+  brandId   String
+  userId    String?
+  rating    Int
+  title     String
+  pros      String[]
+  cons      String[]
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([brandId])
+}
+
+model Comparison {
+  id        String     @id @default(cuid())
+  slug      String     @unique
+  title     String     @default("Comparison")
+  coverUrl  String?
+  itemAName String?
+  itemBName String?
+  prosA     String[]   @default([])
+  consA     String[]   @default([])
+  prosB     String[]   @default([])
+  consB     String[]   @default([])
+  bestForA  String?
+  bestForB  String?
+  ctaLinkA  String?
+  ctaLabelA String?
+  ctaLinkB  String?
+  ctaLabelB String?
+  brandA    Brand?     @relation("CompareA", fields: [brandAId], references: [id])
+  brandAId  String?
+  brandB    Brand?     @relation("CompareB", fields: [brandBId], references: [id])
+  brandBId  String?
+  summary   String?
+  comments  Comment[]
+  reactions Reaction[]
+  createdAt DateTime   @default(now())
+
+  @@index([slug])
+}
+
+model BlogPost {
+  id        String     @id @default(cuid())
+  slug      String     @unique
+  title     String
+  excerpt   String?
+  content   String
+  coverUrl  String?
+  metaTitle String?
+  metaDesc  String?
+  comments  Comment[]
+  reactions Reaction[]
+  createdAt DateTime   @default(now())
+
+  @@index([slug])
+}
+
+model Comment {
+  id           String      @id @default(cuid())
+  blogPost     BlogPost?   @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  blogPostId   String?
+  comparison   Comparison? @relation(fields: [comparisonId], references: [id], onDelete: Cascade)
+  comparisonId String?
+  user         User        @relation(fields: [userId], references: [id])
+  userId       String
+  body         String
+  adminReply   String?
+  adminReplyAt DateTime?
+  createdAt    DateTime    @default(now())
+
+  @@index([blogPostId])
+  @@index([comparisonId])
+}
+
+model Reaction {
+  id           String       @id @default(cuid())
+  blogPost     BlogPost?    @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  blogPostId   String?
+  comparison   Comparison?  @relation(fields: [comparisonId], references: [id], onDelete: Cascade)
+  comparisonId String?
+  user         User         @relation(fields: [userId], references: [id])
+  userId       String
+  type         ReactionType
+  createdAt    DateTime     @default(now())
+
+  @@unique([blogPostId, userId])
+  @@unique([comparisonId, userId])
+  @@index([blogPostId])
+  @@index([comparisonId])
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+}
+
+model Favorite {
+  id      String @id @default(cuid())
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  brand   Brand  @relation(fields: [brandId], references: [id])
+  brandId String
+createdAt DateTime @default(now())
+  @@unique([userId, brandId])
+}
+
+model Click {
+  id        String   @id @default(cuid())
+  brand     Brand    @relation(fields: [brandId], references: [id])
+  brandId   String
+  type      String   // "coupon" | "affiliate"
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([brandId])
+  @@index([createdAt])
+}
+
+model Subscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  confirmed    Boolean  @default(false)
+  unsubscribed Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@index([email])
+}

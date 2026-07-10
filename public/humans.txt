@@ -1,0 +1,6 @@
+/* TEAM */
+Site: CoupenOfficial
+URL: https://coupenofficial.com
+
+/* THANKS */
+Next.js, Prisma, TailwindCSS, Vercel

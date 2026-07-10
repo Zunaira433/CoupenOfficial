@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---- Focus visible ring (replaces browser default for all interactive elements) ---- */
+@layer base {
+  :root {
+    --color-primary: 99 102 241; /* indigo-500 */
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Remove default outline; we rely on focus-visible Tailwind classes everywhere */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Scrollbar styling for webkit */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-700 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-600;
+  }
+
+  /* Prevent layout shift from scrollbar appearance */
+  body {
+    overflow-y: scroll;
+  }
+
+  /* Main content target for skip link */
+  #main-content:focus {
+    outline: none;
+  }
+
+  /* Smooth image rendering */
+  img {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+@layer components {
+  /* Reusable focus ring utility */
+  .focus-ring {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  }
+
+  /* Card base */
+  .card {
+    @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl;
+  }
+
+  /* Consistent section padding */
+  .section {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10;
+  }
+}
