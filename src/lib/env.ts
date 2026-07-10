@@ -1,3 +1,7 @@
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("JWT exists:", !!process.env.JWT_SECRET);
+
+
 /**
  * Centralized, fail-fast environment validation.
  *
