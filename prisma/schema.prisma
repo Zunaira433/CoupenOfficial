@@ -7,23 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 model User {
   id        String     @id @default(cuid())
   email     String     @unique
   password  String
   name      String?
   role      Role       @default(USER)
-  favorites Favorite[]
-  comments  Comment[]
-  reactions Reaction[]
   createdAt DateTime   @default(now())
-}
-
-enum Role {
-  USER
-  ADMIN
+  comments  Comment[]
+  favorites Favorite[]
+  reactions Reaction[]
 }
 
 model Category {
@@ -31,8 +24,8 @@ model Category {
   name        String
   slug        String   @unique
   description String?
-  brands      Brand[]
   createdAt   DateTime @default(now())
+  brands      Brand[]
 
   @@index([slug])
 }
@@ -47,34 +40,34 @@ model Brand {
   affiliateLink String
   metaTitle     String?
   metaDesc      String?
-  category      Category     @relation(fields: [categoryId], references: [id])
   categoryId    String
-  coupons       Coupon[]
-  reviews       Review[]
-  favorites     Favorite[]
-  compareLeft   Comparison[] @relation("CompareA")
-  compareRight  Comparison[] @relation("CompareB")
-  clicks        Click[]
   rating        Float        @default(0)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+  category      Category     @relation(fields: [categoryId], references: [id])
+  clicks        Click[]
+  compareLeft   Comparison[] @relation("CompareA")
+  compareRight  Comparison[] @relation("CompareB")
+  coupons       Coupon[]
+  favorites     Favorite[]
+  reviews       Review[]
 
   @@index([slug])
   @@index([categoryId])
 }
 
 model Coupon {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
   code        String?
   description String?
   discount    String?
-  brand       Brand    @relation(fields: [brandId], references: [id])
   brandId     String
-  verified    Boolean  @default(false)
+  verified    Boolean   @default(false)
   expiresAt   DateTime?
-  clicks      Int      @default(0)
-  createdAt   DateTime @default(now())
+  clicks      Int       @default(0)
+  createdAt   DateTime  @default(now())
+  brand       Brand     @relation(fields: [brandId], references: [id])
 
   @@index([brandId])
   @@index([expiresAt])
@@ -82,7 +75,6 @@ model Coupon {
 
 model Review {
   id        String   @id @default(cuid())
-  brand     Brand    @relation(fields: [brandId], references: [id])
   brandId   String
   userId    String?
   rating    Int
@@ -91,6 +83,7 @@ model Review {
   cons      String[]
   body      String
   createdAt DateTime @default(now())
+  brand     Brand    @relation(fields: [brandId], references: [id])
 
   @@index([brandId])
 }
@@ -112,14 +105,14 @@ model Comparison {
   ctaLabelA String?
   ctaLinkB  String?
   ctaLabelB String?
-  brandA    Brand?     @relation("CompareA", fields: [brandAId], references: [id])
   brandAId  String?
-  brandB    Brand?     @relation("CompareB", fields: [brandBId], references: [id])
   brandBId  String?
   summary   String?
-  comments  Comment[]
-  reactions Reaction[]
   createdAt DateTime   @default(now())
+  comments  Comment[]
+  brandA    Brand?     @relation("CompareA", fields: [brandAId], references: [id])
+  brandB    Brand?     @relation("CompareB", fields: [brandBId], references: [id])
+  reactions Reaction[]
 
   @@index([slug])
 }
@@ -133,25 +126,25 @@ model BlogPost {
   coverUrl  String?
   metaTitle String?
   metaDesc  String?
+  createdAt DateTime   @default(now())
   comments  Comment[]
   reactions Reaction[]
-  createdAt DateTime   @default(now())
 
   @@index([slug])
 }
 
 model Comment {
   id           String      @id @default(cuid())
-  blogPost     BlogPost?   @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
   blogPostId   String?
-  comparison   Comparison? @relation(fields: [comparisonId], references: [id], onDelete: Cascade)
   comparisonId String?
-  user         User        @relation(fields: [userId], references: [id])
   userId       String
   body         String
   adminReply   String?
   adminReplyAt DateTime?
   createdAt    DateTime    @default(now())
+  blogPost     BlogPost?   @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  comparison   Comparison? @relation(fields: [comparisonId], references: [id], onDelete: Cascade)
+  user         User        @relation(fields: [userId], references: [id])
 
   @@index([blogPostId])
   @@index([comparisonId])
@@ -159,14 +152,14 @@ model Comment {
 
 model Reaction {
   id           String       @id @default(cuid())
-  blogPost     BlogPost?    @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
   blogPostId   String?
-  comparison   Comparison?  @relation(fields: [comparisonId], references: [id], onDelete: Cascade)
   comparisonId String?
-  user         User         @relation(fields: [userId], references: [id])
   userId       String
   type         ReactionType
   createdAt    DateTime     @default(now())
+  blogPost     BlogPost?    @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  comparison   Comparison?  @relation(fields: [comparisonId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id])
 
   @@unique([blogPostId, userId])
   @@unique([comparisonId, userId])
@@ -174,29 +167,25 @@ model Reaction {
   @@index([comparisonId])
 }
 
-enum ReactionType {
-  LIKE
-  DISLIKE
-}
-
 model Favorite {
-  id      String @id @default(cuid())
-  user    User   @relation(fields: [userId], references: [id])
-  userId  String
-  brand   Brand  @relation(fields: [brandId], references: [id])
-  brandId String
-createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  brandId   String
+  createdAt DateTime @default(now())
+  brand     Brand    @relation(fields: [brandId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
   @@unique([userId, brandId])
 }
 
 model Click {
   id        String   @id @default(cuid())
-  brand     Brand    @relation(fields: [brandId], references: [id])
   brandId   String
-  type      String   // "coupon" | "affiliate"
+  type      String
   ip        String?
   userAgent String?
   createdAt DateTime @default(now())
+  brand     Brand    @relation(fields: [brandId], references: [id])
 
   @@index([brandId])
   @@index([createdAt])
@@ -210,4 +199,14 @@ model Subscriber {
   createdAt    DateTime @default(now())
 
   @@index([email])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
 }
