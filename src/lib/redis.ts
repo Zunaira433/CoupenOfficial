@@ -5,17 +5,9 @@ const globalForRedis = global as unknown as { redis: Redis };
 export const redis =
   globalForRedis.redis ||
   new Redis(process.env.REDIS_URL || "redis://localhost:6379", {
-    maxRetriesPerRequest: 1,
-    lazyConnect: true,
-    connectTimeout: 1500,
-    commandTimeout: 1500,
-    retryStrategy: () => null
+    maxRetriesPerRequest: 2,
+    lazyConnect: true
   });
-
-redis.on("error", () => {
-  // Swallow connection errors globally so they never crash a request —
-  // caching is a performance optimization, not a required dependency.
-});
 
 if (process.env.NODE_ENV !== "production") globalForRedis.redis = redis;
 
