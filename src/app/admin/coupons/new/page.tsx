@@ -1,13 +1,26 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import SelectWithCreate from "@/components/SelectWithCreate";
+
+type Brand = { id: string; name: string };
 
 export default function NewCouponPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [brandsLoading, setBrandsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/admin/brands")
+      .then((res) => res.json())
+      .then(setBrands)
+      .catch(() => {})
+      .finally(() => setBrandsLoading(false));
+  }, []);
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -42,23 +55,38 @@ export default function NewCouponPage() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">Add Coupon</h1>
 
       <form onSubmit={submit} className="space-y-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-8" noValidate>
+        <div>
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+            Title<span className="text-red-500 ml-0.5" aria-hidden="true">*</span>
+          </label>
+          <input id="title" name="title" type="text" required placeholder="20% off sitewide"
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary" />
+        </div>
+
+        <SelectWithCreate
+          name="brandId"
+          label="Brand"
+          options={brands}
+          loading={brandsLoading}
+          required
+          createHref="/admin/brands/new"
+          createLabel="Create New Brand"
+        />
+
         {[
-          { name: "title", label: "Title", required: true, placeholder: "20% off sitewide" },
-          { name: "brandId", label: "Brand ID (cuid)", required: true, placeholder: "clxxxxxxx" },
           { name: "code", label: "Coupon Code", placeholder: "SAVE20" },
           { name: "discount", label: "Discount Label", placeholder: "20% OFF" },
           { name: "expiresAt", label: "Expires At", type: "date" }
-        ].map(({ name, label, required, type = "text", placeholder }) => (
+        ].map(({ name, label, type = "text", placeholder }) => (
           <div key={name}>
-            <label htmlFor={name} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              {label}{required && <span className="text-red-500 ml-0.5" aria-hidden="true">*</span>}
-            </label>
+            <label htmlFor={name} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{label}</label>
             <input
-              id={name} name={name} type={type} required={required} placeholder={placeholder}
+              id={name} name={name} type={type} placeholder={placeholder}
               className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             />
           </div>
         ))}
+
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Description</label>
           <textarea id="description" name="description" rows={3} placeholder="Short description of this coupon deal" className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary resize-y" />

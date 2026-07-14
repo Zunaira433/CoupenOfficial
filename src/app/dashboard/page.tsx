@@ -1,11 +1,12 @@
 import { requireUser } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import * as prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import FavoriteButton from "@/components/FavoriteButton";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Heart, Store, LayoutDashboard } from "lucide-react";
+import AvatarUpload from "@/components/AvatarUpload";
 
 export const metadata = { title: "Dashboard" };
 export const revalidate = 0;
@@ -19,26 +20,35 @@ export default async function DashboardPage() {
   redirect("/login?next=/dashboard");
 }
 
-  const favorites = await prisma.favorite.findMany({
-    where: { userId: user.userId },
-    include: {
-      brand: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-          logoUrl: true,
-          description: true,
-          _count: { select: { coupons: true } }
+ const [favorites, dbUser] = await Promise.all([
+    prisma.prisma.favorite.findMany({
+      where: { userId: user.userId },
+      include: {
+        brand: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            logoUrl: true,
+            description: true,
+            _count: { select: { coupons: true } }
+          }
         }
-      }
-    },
-    orderBy: { createdAt: "desc" }
-  });
-
+      },
+      orderBy: { createdAt: "desc" }
+    }),
+    prisma.prisma.user.findUnique({
+      where: { id: user.userId },
+      select: { avatarUrl: true }
+    })
+  ]);
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <Breadcrumbs crumbs={[{ label: "Dashboard" }]} />
+
+     <div className="mb-6">
+       <AvatarUpload currentAvatarUrl={dbUser?.avatarUrl || null} displayName={user.email} />
+      </div>
 
       <div className="flex items-center gap-3 mb-10">
         <LayoutDashboard className="w-8 h-8 text-primary" aria-hidden="true" />

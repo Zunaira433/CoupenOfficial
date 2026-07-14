@@ -55,9 +55,10 @@ export default async function BlogListPage({ searchParams }: { searchParams: { p
       ) : (
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
-            <article
+           <Link
               key={post.id}
-              className="flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow"
+              href={`/blog/${post.slug}`}
+              className="flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               {post.coverUrl && (
                 <div className="relative h-48 w-full">
@@ -71,13 +72,8 @@ export default async function BlogListPage({ searchParams }: { searchParams: { p
                 </div>
               )}
               <div className="p-6 flex flex-col flex-1">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="hover:text-primary transition-colors focus:outline-none focus-visible:underline"
-                  >
-                    {post.title}
-                  </Link>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 hover:text-primary transition-colors">
+                  {post.title}
                 </h2>
                 {post.excerpt && (
                   <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-4 flex-1">{post.excerpt}</p>
@@ -89,7 +85,7 @@ export default async function BlogListPage({ searchParams }: { searchParams: { p
                   </time>
                 </div>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       )}

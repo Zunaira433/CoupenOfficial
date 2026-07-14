@@ -10,7 +10,7 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
   const comments = await prisma.comment.findMany({
     where: { blogPostId: post.id },
     orderBy: { createdAt: "desc" },
-    include: { user: { select: { name: true, email: true } } }
+    include: { user: { select: { name: true, email: true, avatarUrl: true } } }
   });
   return NextResponse.json(comments);
 }
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
 
   const comment = await prisma.comment.create({
     data: { blogPostId: post.id, userId: user.userId, body: parsed.data.body },
-    include: { user: { select: { name: true, email: true } } }
+    include: { user: { select: { name: true, email: true, avatarUrl: true } } }
   });
   return NextResponse.json(comment, { status: 201 });
 }

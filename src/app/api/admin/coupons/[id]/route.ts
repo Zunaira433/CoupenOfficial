@@ -15,7 +15,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  await prisma.coupon.delete({ where: { id: params.id } });
-  await cacheInvalidatePrefix("coupons:");
-  return NextResponse.json({ ok: true });
+  try {
+    await prisma.coupon.delete({ where: { id: params.id } });
+    await cacheInvalidatePrefix("coupons:");
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ error: "Failed to delete coupon" }, { status: 500 });
+  }
 }

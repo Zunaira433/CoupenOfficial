@@ -2,13 +2,14 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { MessageCircle, Shield } from "lucide-react";
+import Avatar from "@/components/Avatar";
 
 type CommentT = {
   id: string;
   body: string;
   adminReply: string | null;
   createdAt: string;
-  user: { name: string | null; email: string };
+  user: { name: string | null; email: string; avatarUrl: string | null };
 };
 
 export default function CommentsSection({ apiBase, loginRedirect }: { apiBase: string; loginRedirect: string }) {
@@ -90,15 +91,18 @@ export default function CommentsSection({ apiBase, loginRedirect }: { apiBase: s
         <ul className="space-y-5">
           {comments.map((c) => (
             <li key={c.id} className="border border-gray-200 dark:border-gray-700 rounded-2xl p-5">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="font-medium text-gray-900 dark:text-white text-sm">
-                  {c.user.name || c.user.email.split("@")[0]}
-                </span>
-                <time className="text-xs text-gray-400 dark:text-gray-500">
-                  {new Date(c.createdAt).toLocaleDateString()}
-                </time>
-              </div>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">{c.body}</p>
+  <div className="flex items-center justify-between mb-2">
+    <div className="flex items-center gap-2">
+      <Avatar src={c.user.avatarUrl} name={c.user.name || c.user.email} size={32} />
+      <span className="font-medium text-gray-900 dark:text-white text-sm">
+        {c.user.name || c.user.email.split("@")[0]}
+      </span>
+    </div>
+    <time className="text-xs text-gray-400 dark:text-gray-500">
+      {new Date(c.createdAt).toLocaleDateString()}
+    </time>
+  </div>
+  <p className="text-gray-600 dark:text-gray-300 text-sm whitespace-pre-wrap break-words">{c.body}</p>
 
               {c.adminReply && (
                 <div className="mt-3 ml-4 pl-4 border-l-2 border-primary/40">

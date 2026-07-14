@@ -31,7 +31,7 @@ export default async function ReviewPage({ params }: { params: { brand: string }
           <JsonLd data={reviewSchema({ title: r.title, body: r.body, rating: r.rating, brandName: brand.name })} />
           <h2 className="text-xl font-semibold">{r.title}</h2>
           <p className="text-sm">⭐ {r.rating}/5</p>
-          <p className="mt-3">{r.body}</p>
+          <p className="mt-3 whitespace-pre-wrap break-words">{r.body}</p>
           <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="font-semibold text-green-600">Pros</p>

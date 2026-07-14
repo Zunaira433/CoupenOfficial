@@ -1,20 +1,18 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Store, Tag, LayoutGrid, BookOpen, Users, Mail, BarChart2, Plus, MessageCircle } from "lucide-react";
-export const metadata = { title: "Admin Panel" };
+import { Store, Tag, LayoutGrid, BookOpen, Users, Mail, BarChart2, Plus, MessageCircle, Star } from "lucide-react";export const metadata = { title: "Admin Panel" };
 export const revalidate = 0;
 
 export default async function AdminPage() {
-  const [brands, coupons, categories, posts, users, subscribers, comments, comparisons] = await Promise.all([
-    prisma.brand.count(),
+const [brands, coupons, categories, posts, users, subscribers, comments, comparisons, reviews] = await Promise.all([    prisma.brand.count(),
     prisma.coupon.count(),
     prisma.category.count(),
     prisma.blogPost.count(),
     prisma.user.count(),
     prisma.subscriber.count({ where: { unsubscribed: false } }),
     prisma.comment.count(),
-    prisma.comparison.count()
-
+    prisma.comparison.count(),
+    prisma.review.count()
   ]);
 
   const stats = [
@@ -25,7 +23,9 @@ export default async function AdminPage() {
     { label: "Users", value: users, icon: Users, href: "/admin/users", color: "text-green-500", bg: "bg-green-50 dark:bg-green-900/20" },
     { label: "Subscribers", value: subscribers, icon: Mail, href: "/admin/newsletter", color: "text-rose-500", bg: "bg-rose-50 dark:bg-rose-900/20" },
      { label: "Comments", value: comments, icon: MessageCircle, href: "/admin/comments", color: "text-cyan-500", bg: "bg-cyan-50 dark:bg-cyan-900/20" },
-     { label: "Comparisons", value: comparisons, icon: BarChart2, href: "/admin/compare", color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-900/20" }
+     { label: "Comparisons", value: comparisons, icon: BarChart2, href: "/admin/compare", color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-900/20" },
+    { label: "Reviews", value: reviews, icon: Star, href: "/admin/reviews", color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-900/20" }
+    
   ];
 
   return (
@@ -61,7 +61,8 @@ export default async function AdminPage() {
           { label: "Add Category", href: "/admin/categories/new" },
           { label: "New Blog Post", href: "/admin/blog/new" },
           { label: "Moderate Comments", href: "/admin/comments" },
-          { label: "Add Comparison", href: "/admin/compare/new" }
+          { label: "Add Comparison", href: "/admin/compare/new" },
+            { label: "Add Review", href: "/admin/reviews/new" }
         ].map(({ label, href }) => (
           <Link
             key={href}

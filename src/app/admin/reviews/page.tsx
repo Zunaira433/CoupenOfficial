@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Plus, Pencil, Trash2, Star } from "lucide-react";
+import { Plus, Pencil, Star } from "lucide-react";
+import DeleteButton from "@/components/DeleteButton";
 
 export const metadata = { title: "Manage Reviews – Admin" };
 export const revalidate = 0;
@@ -50,12 +51,7 @@ export default async function AdminReviewsPage() {
                     <Link href={`/admin/reviews/${r.id}`} className="p-2 text-gray-400 hover:text-primary rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label={`Edit ${r.title}`}>
                       <Pencil className="w-4 h-4" aria-hidden="true" />
                     </Link>
-                    <form action={`/api/admin/reviews/${r.id}`} method="POST">
-                      <input type="hidden" name="_method" value="DELETE" />
-                      <button type="submit" className="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500" aria-label={`Delete ${r.title}`}>
-                        <Trash2 className="w-4 h-4" aria-hidden="true" />
-                      </button>
-                    </form>
+                    <DeleteButton endpoint={`/api/admin/reviews/${r.id}`} label={`Delete ${r.title}`} />
                   </div>
                 </td>
               </tr>

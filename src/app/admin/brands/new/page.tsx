@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import ImageUploadField from "@/components/ImageUploadField";
+import SelectWithCreate from "@/components/SelectWithCreate";
 
 type Category = { id: string; name: string; slug: string };
 
@@ -78,27 +79,16 @@ export default function NewBrandPage() {
 
 <ImageUploadField name="logoUrl" label="Brand Logo" />
 
-        <div>
-          <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-            Category<span className="text-red-500 ml-0.5" aria-hidden="true">*</span>
-          </label>
-          <select
-            id="categoryId"
+       <div>
+          <SelectWithCreate
             name="categoryId"
+            label="Category"
+            options={categories}
+            loading={categoriesLoading}
             required
-            disabled={categoriesLoading}
-            defaultValue=""
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-60"
-          >
-            <option value="" disabled>
-              {categoriesLoading ? "Loading categories…" : "Select a category"}
-            </option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+            createHref="/admin/categories/new"
+            createLabel="Create New Category"
+          />
           {!categoriesLoading && categories.length === 0 && (
             <p className="text-sm text-amber-600 dark:text-amber-400 mt-1.5">
               No categories yet — <Link href="/admin/categories/new" className="underline">create one first</Link>.

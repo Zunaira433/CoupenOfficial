@@ -12,11 +12,12 @@ model User {
   email     String     @unique
   password  String
   name      String?
+  avatarUrl String?
   role      Role       @default(USER)
-  createdAt DateTime   @default(now())
-  comments  Comment[]
   favorites Favorite[]
+  comments  Comment[]
   reactions Reaction[]
+  createdAt DateTime   @default(now())
 }
 
 model Category {

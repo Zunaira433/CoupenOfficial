@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Plus, Pencil, Shield, Clock } from "lucide-react";
+import DeleteButton from "@/components/DeleteButton";
 
 export const metadata = { title: "Manage Coupons – Admin" };
 export const revalidate = 0;
@@ -30,7 +31,7 @@ export default async function AdminCouponsPage() {
               <th scope="col" className="text-left px-6 py-3 font-medium text-gray-500 hidden md:table-cell">Brand</th>
               <th scope="col" className="text-left px-6 py-3 font-medium text-gray-500 hidden sm:table-cell">Code</th>
               <th scope="col" className="text-left px-6 py-3 font-medium text-gray-500 hidden lg:table-cell">Status</th>
-              <th scope="col" className="px-6 py-3 font-medium text-gray-500 text-right">Edit</th>
+             <th scope="col" className="px-6 py-3 font-medium text-gray-500 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -52,11 +53,14 @@ export default async function AdminCouponsPage() {
                       <span className="text-xs text-gray-400">Unverified</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <Link href={`/admin/coupons/${c.id}`} className="p-2 text-gray-400 hover:text-primary rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary inline-flex" aria-label={`Edit coupon: ${c.title}`}>
-                      <Pencil className="w-4 h-4" aria-hidden="true" />
-                    </Link>
-                  </td>
+                 <td className="px-6 py-4 text-right">
+  <div className="flex items-center justify-end gap-2">
+    <Link href={`/admin/coupons/${c.id}`} className="p-2 text-gray-400 hover:text-primary rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary inline-flex" aria-label={`Edit coupon: ${c.title}`}>
+      <Pencil className="w-4 h-4" aria-hidden="true" />
+    </Link>
+    <DeleteButton endpoint={`/api/admin/coupons/${c.id}`} label={`Delete ${c.title}`} />
+  </div>
+</td>
                 </tr>
               );
             })}
