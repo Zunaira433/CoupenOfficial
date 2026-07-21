@@ -1,10 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import ImageUploadField from "@/components/ImageUploadField";
-import RichTextEditor from "@/components/RichTextEditor";
+import RichTextEditor, { RichTextEditorHandle } from "@/components/RichTextEditor";
 
 type BlogPostData = {
   id: string;
@@ -21,7 +21,7 @@ export default function EditBlogPostForm({ post }: { post: BlogPostData }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [content, setContent] = useState(post.content);
+  const editorRef = useRef<RichTextEditorHandle>(null);
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,6 +29,7 @@ export default function EditBlogPostForm({ post }: { post: BlogPostData }) {
     setError(null);
     const fd = new FormData(e.currentTarget);
     const body = Object.fromEntries(fd);
+    const content = editorRef.current?.getHTML() || "";
     const res = await fetch(`/api/admin/blog/${post.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -88,7 +89,7 @@ export default function EditBlogPostForm({ post }: { post: BlogPostData }) {
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
             Content<span className="text-red-500 ml-0.5" aria-hidden="true">*</span>
           </label>
-          <RichTextEditor content={content} onChange={setContent} />
+          <RichTextEditor ref={editorRef} content={post.content} />
         </div>
 
         {error && <p className="text-sm text-red-600 dark:text-red-400" role="alert">{error}</p>}
