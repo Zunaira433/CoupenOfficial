@@ -22,6 +22,7 @@ const nextConfig = {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https:",
+    "media-src 'self' https:",
     "connect-src 'self' https://www.google-analytics.com",
     "frame-ancestors 'none'"
   ].join("; ")

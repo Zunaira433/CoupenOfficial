@@ -4,8 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+
 import { Calendar } from "lucide-react";
 import { env } from "@/lib/env";
 import BlogReactions from "@/components/BlogReactions";
@@ -76,9 +75,10 @@ dateModified: new Date(post.createdAt).toISOString(),
         </div>
       </header>
 
-      <div className="prose prose-gray dark:prose-invert max-w-none">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
-      </div>
+      <div
+  className="prose prose-gray dark:prose-invert max-w-none"
+  dangerouslySetInnerHTML={{ __html: post.content }}
+/>
 
       <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
         <BlogReactions slug={post.slug} />

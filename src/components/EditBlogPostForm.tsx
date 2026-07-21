@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import ImageUploadField from "@/components/ImageUploadField";
+import RichTextEditor from "@/components/RichTextEditor";
 
 type BlogPostData = {
   id: string;
@@ -20,6 +21,7 @@ export default function EditBlogPostForm({ post }: { post: BlogPostData }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [content, setContent] = useState(post.content);
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,16 +32,11 @@ export default function EditBlogPostForm({ post }: { post: BlogPostData }) {
     const res = await fetch(`/api/admin/blog/${post.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+      body: JSON.stringify({ ...body, content })
     });
     setLoading(false);
-    if (res.ok) {
-      router.push("/admin/blog");
-      router.refresh();
-    } else {
-      const j = await res.json();
-      setError(j.error || "Failed to update post");
-    }
+    if (res.ok) { router.push("/admin/blog"); router.refresh(); }
+    else { const j = await res.json(); setError(j.error || "Failed"); }
   }
 
   return (
@@ -88,12 +85,10 @@ export default function EditBlogPostForm({ post }: { post: BlogPostData }) {
         </div>
 
         <div>
-          <label htmlFor="content" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-            Content <span className="text-xs text-gray-400 font-normal">(Markdown supported)</span>
-            <span className="text-red-500 ml-0.5">*</span>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+            Content<span className="text-red-500 ml-0.5" aria-hidden="true">*</span>
           </label>
-          <textarea id="content" name="content" rows={16} required defaultValue={post.content}
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-primary resize-y font-mono text-sm" />
+          <RichTextEditor content={content} onChange={setContent} />
         </div>
 
         {error && <p className="text-sm text-red-600 dark:text-red-400" role="alert">{error}</p>}

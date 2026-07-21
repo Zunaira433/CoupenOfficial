@@ -149,3 +149,18 @@ export const blogPostSchema = z.object({
 });
 
 export const blogPostUpdateSchema = blogPostSchema.partial();
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().trim().toLowerCase().email().max(255)
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .max(200)
+    .regex(/[a-z]/, "Password must contain a lowercase letter")
+    .regex(/[A-Z]/, "Password must contain an uppercase letter")
+    .regex(/[0-9]/, "Password must contain a number")
+});
